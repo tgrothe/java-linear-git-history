@@ -32,11 +32,19 @@ public class Main {
     HashMap<Map.Entry<String, String>, Boolean> ancestorMap = new HashMap<>();
     for (int i = 0; i < branches.size(); i++) {
       String b1 = branches.get(i);
-      for (int j = 0; j < branches.size(); j++) {
+      for (int j = i + 1; j < branches.size(); j++) {
         if (i != j) {
           String b2 = branches.get(j);
-          boolean b = "0".equals(exec(repo, "git", "merge-base", "--is-ancestor", b1, b2).get(0));
-          ancestorMap.put(new AbstractMap.SimpleEntry<>(b1, b2), b);
+          System.out.printf("Check %s and %s.%n", b1, b2);
+          boolean a = "0".equals(exec(repo, "git", "merge-base", "--is-ancestor", b1, b2).get(0));
+          if (a) {
+            ancestorMap.put(new AbstractMap.SimpleEntry<>(b1, b2), true);
+            ancestorMap.put(new AbstractMap.SimpleEntry<>(b2, b1), false);
+          } else {
+            boolean b = "0".equals(exec(repo, "git", "merge-base", "--is-ancestor", b2, b1).get(0));
+            ancestorMap.put(new AbstractMap.SimpleEntry<>(b1, b2), false);
+            ancestorMap.put(new AbstractMap.SimpleEntry<>(b2, b1), b);
+          }
         }
       }
     }
@@ -73,8 +81,30 @@ public class Main {
         }
       }
     }
-    System.out.println("descendants = " + descendants);
+    removeCycles(descendants);
+    System.out.println("descendants:");
+    for (Map.Entry<String, List<String>> a : descendants.entrySet()) {
+      System.out.println(a);
+    }
     linearize2(repo, main, descendants);
+  }
+
+  private static void removeCycles(TreeMap<String, List<String>> descendants) {
+    List<String> toRemove = new ArrayList<>();
+    ArrayList<Map.Entry<String, List<String>>> entries = new ArrayList<>(descendants.entrySet());
+    for (int i = 0; i < entries.size(); i++) {
+      Map.Entry<String, List<String>> a = entries.get(i);
+      for (int j = i + 1; j < entries.size(); j++) {
+        Map.Entry<String, List<String>> b = entries.get(j);
+        if (areEqual(a.getValue(), b.getValue())) {
+          System.out.printf("%s and %s are equal.%n", a, b);
+          toRemove.add(a.getKey());
+        }
+      }
+    }
+    for (String key : toRemove) {
+      descendants.remove(key);
+    }
   }
 
   private static boolean areEqual(List<String> a, List<String> b) {
