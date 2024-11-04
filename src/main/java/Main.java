@@ -74,7 +74,7 @@ public class Main {
       }
     }
     System.out.println("descendants = " + descendants);
-    // linearize2(repo, main, descendants);
+    linearize2(repo, main, descendants);
   }
 
   private static boolean areEqual(List<String> a, List<String> b) {
@@ -90,22 +90,15 @@ public class Main {
     if (!descendants.containsKey(b1)) {
       return;
     }
-
-    System.out.printf("Rebase %s.%n", b1);
-    exec(repo, "git", "checkout", b1);
-    List<String> rebase1 = exec(repo, "git", "rebase", b1);
-    System.out.println("rebase = " + rebase1);
-    if (!"0".equals(rebase1.get(0))) {
-      System.exit(0);
-    }
-
     for (String b2 : descendants.get(b1)) {
       System.out.printf("Rebase %s and %s.%n", b1, b2);
-      List<String> rebase2 = exec(repo, "git", "rebase", b1, b2);
-      System.out.println("rebase = " + rebase2);
-      if (!"0".equals(rebase2.get(0))) {
-        System.exit(0);
-      }
+      // --- Uncomment this, if you feel safe: ---
+      //      exec(repo, "git", "checkout", b2);
+      //      List<String> rebase2 = exec(repo, "git", "rebase", b1, b2);
+      //      System.out.println("rebase = " + rebase2);
+      //      if (!"0".equals(rebase2.get(0))) {
+      //        System.exit(0);
+      //      }
     }
     for (String b2 : descendants.get(b1)) {
       linearize2(repo, b2, descendants);
