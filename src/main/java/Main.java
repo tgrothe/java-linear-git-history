@@ -14,7 +14,9 @@ public class Main {
   }
 
   private static void linearize1(File repo, String main) throws IOException, InterruptedException {
-    List<String> branches = exec(repo, "git", "branch");
+    exec(true, repo, "git", "fetch", "--all");
+
+    List<String> branches = exec(true, repo, "git", "branch");
     branches.remove(0); // status int
     branches =
         branches.stream()
@@ -36,12 +38,14 @@ public class Main {
         if (i != j) {
           String b2 = branches.get(j);
           System.out.printf("Check %s and %s.%n", b1, b2);
-          boolean a = "0".equals(exec(repo, "git", "merge-base", "--is-ancestor", b1, b2).get(0));
+          boolean a =
+              "0".equals(exec(false, repo, "git", "merge-base", "--is-ancestor", b1, b2).get(0));
           if (a) {
             ancestorMap.put(new AbstractMap.SimpleEntry<>(b1, b2), true);
             ancestorMap.put(new AbstractMap.SimpleEntry<>(b2, b1), false);
           } else {
-            boolean b = "0".equals(exec(repo, "git", "merge-base", "--is-ancestor", b2, b1).get(0));
+            boolean b =
+                "0".equals(exec(false, repo, "git", "merge-base", "--is-ancestor", b2, b1).get(0));
             ancestorMap.put(new AbstractMap.SimpleEntry<>(b1, b2), false);
             ancestorMap.put(new AbstractMap.SimpleEntry<>(b2, b1), b);
           }
@@ -129,22 +133,17 @@ public class Main {
     for (String b2 : descendants.get(b1)) {
       System.out.printf("Checkout %s and amend last commit to now.%n", b2);
       if (!dryRun) {
-        exec(repo, "git", "checkout", b2);
-        List<String> amend = exec(repo, "git", "commit", "--amend", "--date=now", "--no-edit");
+        exec(true, repo, "git", "checkout", b2);
+        List<String> amend =
+            exec(true, repo, "git", "commit", "--amend", "--date=now", "--no-edit");
         System.out.println("amend = " + amend);
-        if (!"0".equals(amend.get(0))) {
-          System.exit(0);
-        }
       }
 
       System.out.printf("Rebase %s and %s.%n", b1, b2);
       if (!dryRun) {
-        exec(repo, "git", "checkout", b2);
-        List<String> rebase = exec(repo, "git", "rebase", b1, b2);
+        exec(true, repo, "git", "checkout", b2);
+        List<String> rebase = exec(true, repo, "git", "rebase", b1, b2);
         System.out.println("rebase = " + rebase);
-        if (!"0".equals(rebase.get(0))) {
-          System.exit(0);
-        }
       }
     }
     for (String b2 : descendants.get(b1)) {
@@ -152,7 +151,7 @@ public class Main {
     }
   }
 
-  private static List<String> exec(File wd, String... cmd)
+  private static List<String> exec(boolean exitIfNoSuccess, File wd, String... cmd)
       throws IOException, InterruptedException {
     ProcessBuilder builder = new ProcessBuilder(cmd);
     builder.directory(wd);
@@ -168,6 +167,14 @@ public class Main {
 
     int result = process.waitFor();
     lines.add(0, String.valueOf(result));
+
+    if (exitIfNoSuccess && result != 0) {
+      for (String l : lines) {
+        System.out.println(l);
+      }
+      System.out.println("Aborted.");
+      System.exit(0);
+    }
 
     return lines;
   }
