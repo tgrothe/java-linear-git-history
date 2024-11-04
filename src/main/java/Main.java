@@ -86,7 +86,12 @@ public class Main {
     for (Map.Entry<String, List<String>> a : descendants.entrySet()) {
       System.out.println(a);
     }
-    linearize2(repo, main, descendants);
+    linearize2(repo, main, descendants, true);
+    System.out.print("Would you like to continue? Then enter yes: ");
+    if ("yes".equals(new Scanner(System.in, Charset.defaultCharset()).nextLine())) {
+      linearize2(repo, main, descendants, false);
+    }
+    System.out.println("Program end.");
   }
 
   private static void removeCycles(TreeMap<String, List<String>> descendants) {
@@ -115,23 +120,35 @@ public class Main {
     return true;
   }
 
-  private static void linearize2(File repo, String b1, TreeMap<String, List<String>> descendants)
+  private static void linearize2(
+      File repo, String b1, TreeMap<String, List<String>> descendants, boolean dryRun)
       throws IOException, InterruptedException {
     if (!descendants.containsKey(b1)) {
       return;
     }
     for (String b2 : descendants.get(b1)) {
+      System.out.printf("Checkout %s and amend last commit to now.%n", b2);
+      if (!dryRun) {
+        exec(repo, "git", "checkout", b2);
+        List<String> amend = exec(repo, "git", "commit", "--amend", "--date=now", "--no-edit");
+        System.out.println("amend = " + amend);
+        if (!"0".equals(amend.get(0))) {
+          System.exit(0);
+        }
+      }
+
       System.out.printf("Rebase %s and %s.%n", b1, b2);
-      // --- Uncomment this, if you feel safe: ---
-      //      exec(repo, "git", "checkout", b2);
-      //      List<String> rebase2 = exec(repo, "git", "rebase", b1, b2);
-      //      System.out.println("rebase = " + rebase2);
-      //      if (!"0".equals(rebase2.get(0))) {
-      //        System.exit(0);
-      //      }
+      if (!dryRun) {
+        exec(repo, "git", "checkout", b2);
+        List<String> rebase = exec(repo, "git", "rebase", b1, b2);
+        System.out.println("rebase = " + rebase);
+        if (!"0".equals(rebase.get(0))) {
+          System.exit(0);
+        }
+      }
     }
     for (String b2 : descendants.get(b1)) {
-      linearize2(repo, b2, descendants);
+      linearize2(repo, b2, descendants, dryRun);
     }
   }
 
