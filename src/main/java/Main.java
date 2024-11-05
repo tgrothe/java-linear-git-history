@@ -2,7 +2,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Main {
   public static void main(String[] args) throws IOException, InterruptedException {
@@ -16,18 +15,16 @@ public class Main {
   private static void linearize1(File repo, String main) throws IOException, InterruptedException {
     exec(true, repo, "git", "fetch", "--all");
 
-    List<String> branches = exec(true, repo, "git", "branch");
+    List<String> branches =
+        exec(
+            true,
+            repo,
+            "git branch --format '%(refname:short) %(upstream)' | awk '{if (!$2) print $1;}'");
     branches.remove(0); // status int
-    branches =
-        branches.stream()
-            .map(
-                n -> {
-                  if (n.startsWith("* ")) {
-                    return n.substring(2);
-                  }
-                  return n;
-                })
-            .collect(Collectors.toCollection(ArrayList::new));
+    if (!branches.contains(main)) {
+      System.out.printf("Warning: %s is no local branch and has remote.%n", main);
+      branches.add(main);
+    }
     branches.sort(Comparator.naturalOrder());
     //    branches.sort(Comparator.reverseOrder());
     //    Collections.shuffle(branches);
@@ -117,9 +114,13 @@ public class Main {
   }
 
   private static boolean areEqual(List<String> a, List<String> b) {
-    if (a.size() != b.size()) return false;
+    if (a.size() != b.size()) {
+      return false;
+    }
     for (int i = 0; i < a.size(); i++) {
-      if (!a.get(i).equals(b.get(i))) return false;
+      if (!a.get(i).equals(b.get(i))) {
+        return false;
+      }
     }
     return true;
   }
@@ -153,7 +154,8 @@ public class Main {
 
   private static List<String> exec(boolean exitIfNoSuccess, File wd, String... cmd)
       throws IOException, InterruptedException {
-    ProcessBuilder builder = new ProcessBuilder(cmd);
+    String[] newCmd = {"bash", "-c", String.join(" ", cmd)};
+    ProcessBuilder builder = new ProcessBuilder(newCmd);
     builder.directory(wd);
     builder.redirectErrorStream(true);
     Process process = builder.start();
@@ -169,6 +171,7 @@ public class Main {
     lines.add(0, String.valueOf(result));
 
     if (exitIfNoSuccess && result != 0) {
+      System.out.println(Arrays.toString(newCmd));
       for (String l : lines) {
         System.out.println(l);
       }
