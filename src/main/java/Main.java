@@ -32,20 +32,18 @@ public class Main {
     for (int i = 0; i < branches.size(); i++) {
       String b1 = branches.get(i);
       for (int j = i + 1; j < branches.size(); j++) {
-        if (i != j) {
-          String b2 = branches.get(j);
-          System.out.printf("Check %s and %s.%n", b1, b2);
-          boolean a =
-              "0".equals(exec(false, repo, "git", "merge-base", "--is-ancestor", b1, b2).get(0));
-          if (a) {
-            ancestorMap.put(new AbstractMap.SimpleEntry<>(b1, b2), true);
-            ancestorMap.put(new AbstractMap.SimpleEntry<>(b2, b1), false);
-          } else {
-            boolean b =
-                "0".equals(exec(false, repo, "git", "merge-base", "--is-ancestor", b2, b1).get(0));
-            ancestorMap.put(new AbstractMap.SimpleEntry<>(b1, b2), false);
-            ancestorMap.put(new AbstractMap.SimpleEntry<>(b2, b1), b);
-          }
+        String b2 = branches.get(j);
+        System.out.printf("Check %s and %s.%n", b1, b2);
+        boolean a =
+            "0".equals(exec(false, repo, "git", "merge-base", "--is-ancestor", b1, b2).get(0));
+        if (a) {
+          ancestorMap.put(new AbstractMap.SimpleEntry<>(b1, b2), true);
+          ancestorMap.put(new AbstractMap.SimpleEntry<>(b2, b1), false);
+        } else {
+          boolean b =
+              "0".equals(exec(false, repo, "git", "merge-base", "--is-ancestor", b2, b1).get(0));
+          ancestorMap.put(new AbstractMap.SimpleEntry<>(b1, b2), false);
+          ancestorMap.put(new AbstractMap.SimpleEntry<>(b2, b1), b);
         }
       }
     }
@@ -152,9 +150,16 @@ public class Main {
     }
   }
 
+  private static final boolean shouldCmdWrappedToBash = true;
+
   private static List<String> exec(boolean exitIfNoSuccess, File wd, String... cmd)
       throws IOException, InterruptedException {
-    String[] newCmd = {"bash", "-c", String.join(" ", cmd)};
+    String[] newCmd;
+    if (shouldCmdWrappedToBash) {
+      newCmd = new String[] {"bash", "-c", String.join(" ", cmd)};
+    } else {
+      newCmd = cmd;
+    }
     ProcessBuilder builder = new ProcessBuilder(newCmd);
     builder.directory(wd);
     builder.redirectErrorStream(true);
