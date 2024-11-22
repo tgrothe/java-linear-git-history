@@ -34,6 +34,9 @@ public class Main {
     String[] excludes = new Scanner(System.in, Charset.defaultCharset()).nextLine().split(" ");
     List<Integer> excludeIndices = new ArrayList<>();
     for (String ex : excludes) {
+      if (ex.isBlank()) {
+        continue;
+      }
       if (ex.contains("-")) {
         String[] sa = ex.split("-");
         int from = Integer.parseInt(sa[0]);
@@ -203,7 +206,8 @@ public class Main {
       if (!dryRun) {
         exec(true, repo, "git", "checkout", b2);
         List<String> amend =
-            exec(true, repo, "git", "commit", "--amend", "--date=now", "--no-edit");
+            exec(
+                true, repo, "git", "commit", "--amend", "--date=now", "--no-edit", "--allow-empty");
         System.out.println("amend = " + amend);
       }
 
@@ -221,7 +225,7 @@ public class Main {
 
   private static final boolean shouldCmdWrappedToBash = true;
 
-  private static List<String> exec(boolean exitIfNoSuccess, File wd, String... cmd)
+  public static List<String> exec(boolean exitIfNoSuccess, File wd, String... cmd)
       throws IOException, InterruptedException {
     String[] newCmd;
     if (shouldCmdWrappedToBash) {
