@@ -4,12 +4,17 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 public class Main {
+  private static boolean amended;
+
   public static void main(String[] args) throws IOException, InterruptedException {
     System.out.print("Enter full path to repo: ");
     String path = new Scanner(System.in, Charset.defaultCharset()).nextLine();
     System.out.print("Enter main branch name: ");
     String main = new Scanner(System.in, Charset.defaultCharset()).nextLine();
     linearize1(new File(path), main);
+    System.out.println(
+        "Should all branches found also be amended? This can sometimes be useful. Then enter yes:");
+    amended = "yes".equals(new Scanner(System.in, Charset.defaultCharset()).nextLine());
   }
 
   private static void linearize1(File repo, String main) throws IOException, InterruptedException {
@@ -202,13 +207,22 @@ public class Main {
       return;
     }
     for (String b2 : descendants.get(b1)) {
-      System.out.printf("Checkout %s and amend last commit to now.%n", b2);
-      if (!dryRun) {
-        exec(true, repo, "git", "checkout", b2);
-        List<String> amend =
-            exec(
-                true, repo, "git", "commit", "--amend", "--date=now", "--no-edit", "--allow-empty");
-        System.out.println("amend = " + amend);
+      if (amended) {
+        System.out.printf("Checkout %s and amend last commit to now.%n", b2);
+        if (!dryRun) {
+          exec(true, repo, "git", "checkout", b2);
+          List<String> amend =
+              exec(
+                  true,
+                  repo,
+                  "git",
+                  "commit",
+                  "--amend",
+                  "--date=now",
+                  "--no-edit",
+                  "--allow-empty");
+          System.out.println("amend = " + amend);
+        }
       }
 
       System.out.printf("Rebase %s and %s.%n", b1, b2);
