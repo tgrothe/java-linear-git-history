@@ -222,6 +222,8 @@ public class Main {
                   "--no-edit",
                   "--allow-empty");
           System.out.println("amend = " + amend);
+          System.out.println("Give us a second to climate the Unix time ...");
+          Thread.sleep(1000);
         }
       }
 
