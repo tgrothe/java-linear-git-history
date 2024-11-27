@@ -4,7 +4,7 @@ import java.util.*;
 
 public class DemoExampleRepo {
   public static void main(String[] args) throws IOException, InterruptedException {
-    createExample(3, 2);
+    createExample(4, 2);
   }
 
   public static void createExample(int n, int m) throws IOException, InterruptedException {
@@ -50,8 +50,12 @@ public class DemoExampleRepo {
           }
         }
         Main.exec(true, rf, "git checkout -b " + b.getValue());
-        Main.exec(true, rf, "git commit --allow-empty -m '" + b.getValue() + " a'");
-        Main.exec(true, rf, "git commit --allow-empty -m '" + b.getValue() + " b'");
+        Main.exec(true, rf, "touch " + System.currentTimeMillis() + "_1.txt");
+        Main.exec(true, rf, "git add -A");
+        Main.exec(true, rf, "git commit -m '" + b.getValue() + " a'");
+        Main.exec(true, rf, "touch " + System.currentTimeMillis() + "_2.txt");
+        Main.exec(true, rf, "git add -A");
+        Main.exec(true, rf, "git commit -m '" + b.getValue() + " b'");
         changed = true;
       }
     }
