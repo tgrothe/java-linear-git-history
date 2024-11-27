@@ -10,97 +10,78 @@ Before:
 
 ```plain
 git log --graph --pretty=oneline --abbrev-commit --all
-* af3cf1d 02_02 b
-* 71f9c52 02_02 a
-| * 826e3e7 02_03 b
-| * 8c4c4dc 02_03 a
-|/
-| * 6f803e7 03_02 b
-| * 952eb60 03_02 a
-| | * f246cc5 03_01 b
-| | * 488c8a5 03_01 a
-| |/
-| | * 926f31c 03_03 b
-| | * e0a8b37 03_03 a
-| |/
-| * c048b74 03 b
-| * e145af1 03 a
-|/
-| * f5a535e 01_01 b
-| * da7274f 01_01 a
-| | * 6a186e9 02_01 b
-| | * b637c6b 02_01 a
+* c18b859 04_01 b
+* 8d2b8ce 04_01 a
+| * 54e2f28 03_02 b
+| * a8d5d2f 03_02 a
+| | * bd9910c 02_02 b
+| | * fa8608e 02_02 a
+| | | * 3f97093 04_02 b
+| | | * ab1d132 04_02 a
+| |_|/
+|/| |
+* | | b193e57 04 b
+* | | 812ac52 04 a
+|/ /
+| | * cdd25ee 03_01 b
+| | * 0436480 03_01 a
 | |/
 |/|
-* | 9e10352 02 b
-* | 7097703 02 a
+* | 8481d3e 03 b
+* | 4055f86 03 a
 |/
-| * d9eda91 01_02 b
-| * e244295 01_02 a
+| * 2a296b0 02_01 b
+| * fe2ec34 02_01 a
 |/
-| * 554534d 01_03 b
-| * 936029a 01_03 a
+* fe570a4 02 b
+* 421bfd4 02 a
+| * b1b71a8 01_01 b
+| * 73af8a1 01_01 a
 |/
-* e8bc96c 01 b
-* 79de9d0 01 a
-* e61a5be Init master
+| * d7d25d9 01_02 b
+| * 67587d2 01_02 a
+|/
+* 6b7509a 01 b
+* cf85257 01 a
+* aec5c62 Init master
 ```
 
 and after:
 
 ```plain
 git log --graph --pretty=oneline --abbrev-commit --all
-* ae908a6 03_02 b
-* 623915d 03_02 a
-| * 8fd9fd9 03_03 b
-| * 7ee399d 03_03 a
+* 2dea885 04_02 b
+* 5097d6b 04_02 a
+| * d82e9ff 04_01 b
+| * 01e8a68 04_01 a
 |/
-* b4dde2c 03 b
-* a134c86 03 a
-* ca4173e 02 b
-* c9de5a1 02 a
-* f797a5c 01 b
-| * ace917d 03_01 b
-| * 812cc26 03_01 a
-| * 078c1aa 03 b
-| * 5f87000 03 a
-| * 14f442f 02 b
-| * 6bfb782 02 a
-| * 7ae9593 01 b
+* eb26ea4 04 b
+* 480e870 04 a
+| * 6e64ece 03_02 b
+| * 018cd20 03_02 a
 |/
-* 315ddd1 03 b
-* 92e84e6 03 a
-| * 6fc13cc 02_03 b
-| * 77915d5 02_03 a
+| * 5234c59 03_01 b
+| * 03abd82 03_01 a
 |/
-* cc14fab 02 b
-* 25f5070 02 a
-* b0747c8 01 b
-| * 28cf001 02_01 b
-| * a78255c 02_01 a
-| | * 4ea45b9 02_02 b
-| | * eda1cae 02_02 a
-| |/
-| * 2692caf 02 b
-| * 4403ddc 02 a
-| * 005f18b 01 b
+* 68ffe51 03 b
+* da0da7a 03 a
+| * 89a32af 02_02 b
+| * c0ea807 02_02 a
 |/
-* 63b9183 02 b
-* 329565c 02 a
-| * ad153d4 01_03 b
-| * 3a5cdfe 01_03 a
+| * 4d6e82e 02_01 b
+| * 15803bd 02_01 a
 |/
-* 7ccdec6 01 b
-| * 15d223c 01_01 b
-| * f970c6e 01_01 a
-| | * b2d199d 01_02 b
-| | * 923c9ac 01_02 a
-| |/
-| * 7510a59 01 b
+* c7e856a 02 b
+* 40b0f21 02 a
+| * 9b4238b 01_02 b
+| * a5b1083 01_02 a
 |/
-* 0931c8b 01 b
-* 79de9d0 01 a
-* e61a5be Init master
+| * 1fce315 01_01 b
+| * b53d682 01_01 a
+|/
+* 75c7670 01 b
+* cf85257 01 a
+* aec5c62 Init master
 ```
 
-In this example, each last commits on branches are amended. As you can see, there are no more crossing paths.
+In this example, each last commits on branches are amended. As you can see, there are no more crossing paths, the commits should be untangled and linear. =)
