@@ -2,7 +2,7 @@
 
 Create a linear history of all local branches through rebase.
 
-No guarantee. Make backups, just in case.
+No guarantees. Make backups, just in case.
 
 ## Example
 
@@ -46,7 +46,7 @@ git log --graph --pretty=oneline --abbrev-commit --all
 * aec5c62 Init master
 ```
 
-and after:
+After:
 
 ```plain
 git log --graph --pretty=oneline --abbrev-commit --all
@@ -84,4 +84,4 @@ git log --graph --pretty=oneline --abbrev-commit --all
 * aec5c62 Init master
 ```
 
-In this example, each last commits on branches are amended. As you can see, there are no more crossing paths, the commits should be untangled and linear. =)
+In this example, each last commit on branches is amended. As you can see, there are no more crossing paths, and the commits should be untangled and linear. =)
