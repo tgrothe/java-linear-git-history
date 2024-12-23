@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 public class Main {
-  private static boolean amended;
+  private static boolean shouldAmend;
 
   public static void main(String[] args) throws IOException, InterruptedException {
     System.out.print("Enter full path to repo: ");
@@ -13,7 +13,7 @@ public class Main {
     String main = new Scanner(System.in, Charset.defaultCharset()).nextLine();
     System.out.println(
         "Should all branches found also be amended? This can sometimes be useful. Then enter yes:");
-    amended = "yes".equals(new Scanner(System.in, Charset.defaultCharset()).nextLine());
+    shouldAmend = "yes".equals(new Scanner(System.in, Charset.defaultCharset()).nextLine());
     linearize1(new File(path), main);
   }
 
@@ -26,7 +26,8 @@ public class Main {
             "git branch --format '%(refname:short) %(upstream)' | awk '{if (!$2) print $1;}'");
     branches.remove(0); // status int
     if (!branches.contains(main)) {
-      System.out.printf("Warning: %s is no local branch and has remote.%n", main);
+      System.out.printf("Warning: %s is not a local branch and has a remote.%n", main);
+      System.out.println("Will add it to the list of branches.");
       branches.add(main);
     }
     branches.sort(Comparator.naturalOrder());
@@ -207,7 +208,7 @@ public class Main {
       return;
     }
     for (String b2 : descendants.get(b1)) {
-      if (amended) {
+      if (shouldAmend) {
         System.out.printf("Checkout %s and amend last commit to now.%n", b2);
         if (!dryRun) {
           exec(true, repo, "git", "checkout", b2);
@@ -222,7 +223,7 @@ public class Main {
                   "--no-edit",
                   "--allow-empty");
           System.out.println("amend = " + amend);
-          System.out.println("Give us a second to climate the Unix time ...");
+          System.out.println("Waiting 1 second to avoid same commit time in next branch.");
           Thread.sleep(1000);
         }
       }
@@ -239,16 +240,10 @@ public class Main {
     }
   }
 
-  private static final boolean shouldCmdWrappedToBash = true;
-
   public static List<String> exec(boolean exitIfNoSuccess, File wd, String... cmd)
       throws IOException, InterruptedException {
-    String[] newCmd;
-    if (shouldCmdWrappedToBash) {
-      newCmd = new String[] {"bash", "-c", String.join(" ", cmd)};
-    } else {
-      newCmd = cmd;
-    }
+    // Always use bash to execute the command.
+    String[] newCmd = new String[] {"bash", "-c", String.join(" ", cmd)};
     ProcessBuilder builder = new ProcessBuilder(newCmd);
     builder.directory(wd);
     builder.redirectErrorStream(true);
