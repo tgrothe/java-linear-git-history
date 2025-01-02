@@ -5,6 +5,6 @@ ext {
 
     depsArray = [
             lang3: 'org.apache.commons:commons-lang3:3.17.0',
-            json : 'org.json:json:20240303',
+            json : 'org.json:json:20241224',
     ]
 }
