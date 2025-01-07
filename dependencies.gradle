@@ -1,5 +1,5 @@
 ext {
-    spotlessVersion = '7.0.0.BETA4'
+    spotlessVersion = '7.0.0'
     benmanesVersion = '0.51.0'
     spotbugsVersion = '6.0.27'
 
