@@ -22,8 +22,6 @@ repositories {
 }
 
 dependencies {
-    implementation depsArray.lang3
-    implementation depsArray.json
 }
 
 tasks.withType(JavaCompile) {
