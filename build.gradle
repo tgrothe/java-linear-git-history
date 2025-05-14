@@ -3,15 +3,11 @@ buildscript {
 }
 
 plugins {
-    id 'java'
     id 'application'
     id 'com.diffplug.spotless' version "${spotlessVersion}"
     id 'com.github.ben-manes.versions' version "${benmanesVersion}"
     id 'com.github.spotbugs' version "${spotbugsVersion}"
 }
-
-group = 'org.example'
-version = '1.0'
 
 application {
     mainClass.set(System.getProperty('main_class') ?: 'Main')
@@ -22,10 +18,12 @@ repositories {
 }
 
 dependencies {
+    implementation depsArray.lang3
 }
 
-tasks.withType(JavaCompile) {
-    options.release = 17
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 spotless {
@@ -38,7 +36,7 @@ spotless {
 jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
-        attributes 'Main-Class': 'Main'
+        attributes 'Main-Class': application.getMainClass()
     }
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
