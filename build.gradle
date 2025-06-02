@@ -1,12 +1,11 @@
 buildscript {
-    apply from: 'dependencies.gradle'
 }
 
 plugins {
     id 'application'
-    id 'com.diffplug.spotless' version "${spotlessVersion}"
-    id 'com.github.ben-manes.versions' version "${benmanesVersion}"
-    id 'com.github.spotbugs' version "${spotbugsVersion}"
+    id 'com.diffplug.spotless' version '7.0.4'
+    id 'com.github.ben-manes.versions' version '0.52.0'
+    id 'com.github.spotbugs' version '6.1.13'
 }
 
 application {
@@ -18,7 +17,8 @@ repositories {
 }
 
 dependencies {
-    implementation depsArray.lang3
+    implementation 'org.apache.commons:commons-lang3:3.17.0'
+    implementation 'org.json:json:20250517'
 }
 
 java {
